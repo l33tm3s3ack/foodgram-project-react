@@ -36,7 +36,7 @@ class ListCreateRetrieveViewSet(mixins.ListModelMixin,
 class UserViewSet(ListCreateRetrieveViewSet):
     queryset = User.objects.all()
     serializer_class = UserManageSerializer
-    permission_classes = [UserPermission, ]
+    permission_classes = (UserPermission, )
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -125,7 +125,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend, )
     filter_class = RecipeFilterSet
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
     @action(detail=True, methods=['POST', 'DELETE'])
     def favorite(self, request, pk=None):
@@ -217,13 +217,13 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
-    permission_classes = []
+    permission_classes = ()
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
-    permission_classes = []
-    filter_backends = [filters.SearchFilter, ]
-    search_fields = ['^name', ]
+    permission_classes = ()
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('^name', )

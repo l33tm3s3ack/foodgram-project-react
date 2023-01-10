@@ -57,11 +57,8 @@ class UserManageSerializer(serializers.ModelSerializer):
         """Метод, определяющий,
         является ли текущий пользователь подписанным или нет."""
         user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        subscribed = Subscribe.objects.filter(
-            author=obj, subscriber=user).exists()
-        return subscribed
+        return not user.is_anonymous and Subscribe.objects.filter(
+                    author=obj, subscriber=user).exists()
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -140,17 +137,13 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        in_cart = ShoppingCart.objects.filter(receipt=obj, user=user).exists()
-        return in_cart
+        return not user.is_anonymous and ShoppingCart.objects.filter(
+            receipt=obj, user=user).exists()
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        favorites = Favorites.objects.filter(receipt=obj, user=user).exists()
-        return favorites
+        return not user.is_anonymous and Favorites.objects.filter(
+            receipt=obj, user=user).exists()
 
     def create(self, validated_data):
         tags_data = validated_data.pop('tags')

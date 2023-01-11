@@ -71,7 +71,7 @@ jobs:
         script: |
             sudo docker pull 88228811133000/foodgram:latest
             sudo docker pull 88228811133000/foodgram-frontend:latest
-            sudo docker-compose stop
+            sudo docker-compose down
             touch .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env

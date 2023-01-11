@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: 88228811133000/foodgram
           tags: latest
-          path: backend/
+          path: ./
 
   deploy:
     runs-on: ubuntu-latest

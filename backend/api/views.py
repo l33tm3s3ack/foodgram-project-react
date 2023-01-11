@@ -1,28 +1,21 @@
-from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from receipts.models import (AttachedIngredient, Favorites, Ingredient,
+                             Receipt, ShoppingCart, Tag)
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from users.models import Subscribe, User
 
 from .filters import RecipeFilterSet
 from .mixins import ListCreateRetrieveViewSet
-from receipts.models import (AttachedIngredient,
-                             Ingredient,
-                             Receipt,
-                             Tag,
-                             Favorites,
-                             ShoppingCart)
-from users.models import User, Subscribe
 from .permissions import UserPermission
-from .serializers import (IngredientSerializer,
-                          PasswordChangeSerializer,
-                          RecipeSerializer,
-                          SignupSerializer,
-                          SubscribeUserSerializer,
-                          TagSerializer,
+from .serializers import (IngredientSerializer, PasswordChangeSerializer,
+                          RecipeSerializer, SignupSerializer,
+                          SubscribeUserSerializer, TagSerializer,
                           UserManageSerializer)
 
 

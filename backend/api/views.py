@@ -1,13 +1,14 @@
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 
 from .filters import RecipeFilterSet
+from .mixins import ListCreateRetrieveViewSet
 from receipts.models import (AttachedIngredient,
                              Ingredient,
                              Receipt,
@@ -23,14 +24,6 @@ from .serializers import (IngredientSerializer,
                           SubscribeUserSerializer,
                           TagSerializer,
                           UserManageSerializer)
-
-
-class ListCreateRetrieveViewSet(mixins.ListModelMixin,
-                                mixins.RetrieveModelMixin,
-                                mixins.CreateModelMixin,
-                                viewsets.GenericViewSet):
-    """Mixin for UserViewset"""
-    pass
 
 
 class UserViewSet(ListCreateRetrieveViewSet):

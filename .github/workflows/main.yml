@@ -70,6 +70,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
             sudo docker pull 88228811133000/foodgram:latest
+            sudo docker pull 88228811133000/foodgram-frontend:latest
             sudo docker-compose stop
             touch .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env

@@ -1,12 +1,10 @@
+from receipts.models import (AttachedIngredient, AttachedTag, Favorites,
+                             Ingredient, Receipt, ShoppingCart, Tag)
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
+from rest_framework.validators import UniqueValidator
+from users.models import Subscribe, User
 
-from receipts.models import (AttachedIngredient,
-                             AttachedTag, Ingredient,
-                             Favorites,
-                             Receipt, ShoppingCart, Tag)
-from users.models import User, Subscribe
 from .fields import Base64ImageField
 
 
@@ -58,7 +56,7 @@ class UserManageSerializer(serializers.ModelSerializer):
         является ли текущий пользователь подписанным или нет."""
         user = self.context['request'].user
         return not user.is_anonymous and Subscribe.objects.filter(
-                    author=obj, subscriber=user).exists()
+            author=obj, subscriber=user).exists()
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -218,6 +216,5 @@ class SubscribeUserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
-        subscribed = Subscribe.objects.filter(
+        return Subscribe.objects.filter(
             author=obj, subscriber=user).exists()
-        return subscribed

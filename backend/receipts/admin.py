@@ -1,13 +1,8 @@
 from django.contrib import admin
 from django.db.models import Count
 
-from .models import (Receipt,
-                     Ingredient,
-                     Tag,
-                     AttachedIngredient,
-                     AttachedTag,
-                     Favorites,
-                     ShoppingCart)
+from .models import (AttachedIngredient, AttachedTag, Favorites, Ingredient,
+                     Receipt, ShoppingCart, Tag)
 
 
 class AttachedIngredientAdmin(admin.StackedInline):

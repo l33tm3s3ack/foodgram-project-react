@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from receipts.models import (AttachedIngredient, AttachedTag, Favorites,
                              Ingredient, Receipt, ShoppingCart, Tag)
 from rest_framework import serializers
@@ -80,6 +81,11 @@ class RecipeIngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttachedIngredient
         fields = ('id', 'measurement_unit', 'name', 'amount')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['id'] = instance.ingredient.id
+        return representation
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -199,9 +205,8 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
 
 class SubscribeUserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
-    recipes = ShortRecipeSerializer(source='receipts',
-                                    many=True,
-                                    read_only=True)
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -211,8 +216,20 @@ class SubscribeUserSerializer(serializers.ModelSerializer):
                   'email',
                   'id',
                   'is_subscribed',
-                  'recipes'
+                  'recipes',
+                  'recipes_count'
                   )
+
+    def get_recipes_count(self, obj):
+        return Receipt.objects.filter(author=obj).count()
+
+    def get_recipes(self, obj):
+        page_size = (self.context['request'].query_params.get('recipes_limit')
+                     or 10)
+        paginator = Paginator(obj.receipts.all(), page_size)
+        recipes = paginator.page(1)
+        serializer = ShortRecipeSerializer(recipes, many=True)
+        return serializer.data
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user

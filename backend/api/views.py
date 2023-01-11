@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,11 +14,13 @@ from users.models import Subscribe, User
 
 from .filters import RecipeFilterSet
 from .mixins import ListCreateRetrieveViewSet
-from .permissions import UserPermission
+from .permissions import Subscribepermission, UserPermission
 from .serializers import (IngredientSerializer, PasswordChangeSerializer,
                           RecipeSerializer, SignupSerializer,
                           SubscribeUserSerializer, TagSerializer,
                           UserManageSerializer)
+
+logger = logging.getLogger(__name__)
 
 
 class UserViewSet(ListCreateRetrieveViewSet):
@@ -52,7 +56,9 @@ class UserViewSet(ListCreateRetrieveViewSet):
                 return Response(status=status.HTTP_204_NO_CONTENT)
         return Response('field error', status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['GET', ])
+    @action(detail=False,
+            methods=['GET', ],
+            permission_classes=(Subscribepermission, ))
     def subscriptions(self, request):
         """Возвращает подписки текущего пользователя."""
         user = User.objects.get(id=request.user.id)
@@ -74,11 +80,16 @@ class UserViewSet(ListCreateRetrieveViewSet):
             context={'request': request})
         return Response(serializer.data)
 
-    @action(detail=True, methods=['POST', 'DELETE'])
+    @action(detail=True,
+            methods=['POST', 'DELETE'],
+            permission_classes=(Subscribepermission, ))
     def subscribe(self, request, pk=None):
         """Позволяет подписаться или отписаться от пользователя."""
+        logger.info('trying to subscribe')
         author = self.get_object()
+        logger.info(f'got an author, {author}')
         user = User.objects.get(id=request.user.id)
+        logger.info(f'got a user {user}')
         if request.method == 'POST':
             if (
                 Subscribe.objects.filter(
@@ -89,19 +100,24 @@ class UserViewSet(ListCreateRetrieveViewSet):
             ):
                 return Response('Can\'t subscribe',
                                 status=status.HTTP_400_BAD_REQUEST)
+            logger.info('trying to create subscribe object')
             Subscribe.objects.create(author=author, subscriber=user)
+            logger.info('sub object created, serializin author')
             serializer = SubscribeUserSerializer(
                 author, context={'request': request})
+            logger.info('author serialized')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
+            logger.info('trying to get subscribe object')
             try:
                 subscribe = Subscribe.objects.get(
                     author=author, subscriber=user
                 )
-            except (User.DoesNotExist):
+            except (ObjectDoesNotExist):
                 return Response(
                     'Object does not exist', status=status.HTTP_400_BAD_REQUEST
                 )
+            logger.info('trying to delete object')
             subscribe.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 

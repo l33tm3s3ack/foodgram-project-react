@@ -14,7 +14,7 @@ services:
       - db:/var/lib/postgresql/data
 
   backend:
-    image: 88228811133000/foodgram:latest
+    build: ../backend/
     restart: always
     volumes:
 
@@ -28,7 +28,7 @@ services:
       - ./.env
 
   frontend:
-    image: 88228811133000/foodgram-frontend:latest
+    build: ../frontend/
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
